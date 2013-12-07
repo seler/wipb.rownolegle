@@ -4,6 +4,8 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{csvsimple}
+\usepackage{pgfplots}
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
@@ -56,60 +58,52 @@ przedstawionym na wykładzie. Czy przy pomocy MPI możliwe jest osiągnięcie ma
 teoretycznej przepustowości sieci? Jeżeli nie to wymień przyczyny, które Twoim zdaniem to 
 uniemożliwiają.
  
-\section{Kod programu}\label{sec:kod}
+\pagebreak
+\section{Rozwiązanie}\label{sec:kod}
 
 \lstinputlisting{main.cpp}
 
 \section{Wyniki badań}
 
 \begin{table}[t]
-\caption{podpis do tabeli}
-\label{nazwa odnośnika, która potem użyjemy do cytowania tabeli}
- \begin{tabular}{|r|l|l|l|}
-  \hline
-  wielkosc & blokujacy & nieblokujacy & ping \\
-  \hline
-1 & 3.975074\e{-7} & 2.455981\e{-7} &  \\
-  \hline
-2 & 2.932502\e{-7} & 2.454362\e{-7} &  \\
-  \hline
-4 & 2.971865\e{-7} & 2.465749\e{-7} &  \\
-  \hline
-8 & 3.083114\e{-7} & 2.486267\e{-7} &  \\
-  \hline
-16 & 3.175810\e{-7} & 2.466659\e{-7} & 1.83\e{-7} (24) \\
-  \hline
-32 & 3.147961\e{-7} & 2.462602\e{-7} & 1.80\e{-7} (40) \\
-  \hline
-64 & 3.254700\e{-7} & 2.555389\e{-7} & 1.81\e{-7} (72) \\
-  \hline
-  128 & 3.413152\e{-7} & 2.740780\e{-7} & 4.79\e{-7} (136) \\
-  \hline
-256 & 3.448095\e{-7} & 2.926863\e{-7} & 4.70\e{-7} (264) \\
-  \hline
-512 & 4.126596\e{-7} & 3.546302\e{-7} & 5.01\e{-7} (520) \\
-  \hline
-1024 & 5.276343\e{-7} & 4.776539\e{-7} & 5.16\e{-7} (1032) \\
-  \hline
-\end{tabular} 
+\centering
+\csvautotabular{wyniki_czas.csv}
+\caption{Czas w zależności od rozmiaru komunikatu.}
+\label{tabela_czas}
 \end{table}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=16cm]{wykres_czas.eps}
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Rozmiar komunikatu}, ylabel={Czas}, legend style={legend pos=outer north east}]
+		\addplot table [x=wielkosc, y=blokujacy, col sep=comma] {wyniki_czas.csv};
+		\addplot table [x=wielkosc, y=nieblokujacy, col sep=comma, ] {wyniki_czas.csv};
+		\addplot table [x=wielkosc, y=ping, col sep=comma, ] {wyniki_czas.csv};
+		\legend{$blokujący$,$nieblokujący$,$ping$}
+		\end{axis}
+	\end{tikzpicture}
     \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
-    \label{wykres_zas}
+    \label{wykres_czas}
 \end{figure}
 
-Lorem ipsum dolor sit amet.
+\begin{table}[t]
+\centering
+\csvautotabular{wyniki_przepustowosc.csv}
+\caption{Czas w zależności od rozmiaru komunikatu.}
+\label{tabela_przepustowosc}
+\end{table}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=16cm]{wykres_przepustowosc.eps}
-    \caption{Wykres przepustowości w zależności od rozmiaru komunikatu.}
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Rozmiar komunikatu}, ylabel={Przepustowość}, legend style={legend pos=outer north east}]
+		\addplot table [x=wielkosc, y=blokujacy, col sep=comma] {wyniki_przepustowosc.csv};
+		\addplot table [x=wielkosc, y=nieblokujacy, col sep=comma, ] {wyniki_przepustowosc.csv};
+		\legend{$blokujacy$,$nieblokujacy$}
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
     \label{wykres_przepustowosc}
 \end{figure}
 
-\subparagraph{podparagraf}
-Lorem ipsum dolor sit amet.
 \end{document}

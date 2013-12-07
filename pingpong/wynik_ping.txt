@@ -1,0 +1,66 @@
+PING 192.168.0.114 (192.168.0.114) 1(29) bytes of data.
+9 bytes from 192.168.0.114: icmp_req=1 ttl=64
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+
+PING 192.168.0.114 (192.168.0.114) 2(30) bytes of data.
+10 bytes from 192.168.0.114: icmp_req=1 ttl=64
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+
+PING 192.168.0.114 (192.168.0.114) 4(32) bytes of data.
+12 bytes from 192.168.0.114: icmp_req=1 ttl=64
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+
+PING 192.168.0.114 (192.168.0.114) 8(36) bytes of data.
+16 bytes from 192.168.0.114: icmp_req=1 ttl=64
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+
+PING 192.168.0.114 (192.168.0.114) 16(44) bytes of data.
+24 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.183 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.183/0.183/0.183/0.000 ms
+PING 192.168.0.114 (192.168.0.114) 32(60) bytes of data.
+40 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.180 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.180/0.180/0.180/0.000 ms
+PING 192.168.0.114 (192.168.0.114) 64(92) bytes of data.
+72 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.181 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.181/0.181/0.181/0.000 ms
+PING 192.168.0.114 (192.168.0.114) 128(156) bytes of data.
+136 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.479 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.479/0.479/0.479/0.000 ms
+PING 192.168.0.114 (192.168.0.114) 256(284) bytes of data.
+264 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.470 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.470/0.470/0.470/0.000 ms
+PING 192.168.0.114 (192.168.0.114) 512(540) bytes of data.
+520 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.501 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.501/0.501/0.501/0.000 ms
+PING 192.168.0.114 (192.168.0.114) 1024(1052) bytes of data.
+1032 bytes from 192.168.0.114: icmp_req=1 ttl=64 time=0.516 ms
+
+--- 192.168.0.114 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.516/0.516/0.516/0.000 ms
