@@ -1,3 +1,2 @@
 #!/bin/bash
-
-mpiexec -n 2 ./pingpong
+sbatch -n 2 pingpong.sh

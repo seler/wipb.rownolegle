@@ -1,0 +1,9 @@
+
+pingpong: main.o
+	mpicxx main.o -o main.cpp
+
+main.o : main.cpp
+	mpicxx -c -O3 main.cpp
+
+clean:
+	rm -rf *.o pingpong
