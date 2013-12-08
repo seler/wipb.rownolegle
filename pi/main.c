@@ -4,12 +4,15 @@
 #include <omp.h>
 #include <time.h>
 
+
 int main(int argc, char *argv[]) {
 	double k_max;
 	double pi;
-	double i;
+	double sum[2];
 	double timea, timeb;
+	int i;
 	int num_threads;
+	int nthreads;
 
 	pi = 0.;
 	k_max = (double)atoi(argv[2]) * 1000000.;
@@ -20,12 +23,21 @@ int main(int argc, char *argv[]) {
 	timea = clock();
 	#pragma omp parallel
 	{
-		int ID = omp_get_thread_num();
-
-		for(i = 0.0; i <= k_max; i++)
-		{
-			pi += 4 * (pow(-1, i)/((2 * i) + 1));
+		double i;
+		int id = omp_get_thread_num();
+		int nthrds = omp_get_num_threads();
+		if (id == 0) {
+			nthreads = nthrds;
 		}
+
+		for(i = id; i <= k_max; i+=nthrds)
+		{
+			sum[id] += 4 * (pow(-1, i)/((2 * i) + 1));
+		}
+	}
+	pi = 0.0;
+	for(i = 0; i < nthreads; i++){
+		pi += sum[i]
 	}
 	timeb = clock();
 
