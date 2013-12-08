@@ -48,9 +48,11 @@ Napisać program obliczający liczbę Pi do określonej precyzji (należy przete
 
 \section{Wyniki badań}
 
+Czas wykonania implementacji jednowątkowej wyniósł 5,554 sekundy.
+
 \begin{table}[t]
 \centering
-\csvautotabular{wyniki_czas.csv}
+\csvautotabular{wyniki.csv}
 \caption{Czas w zależności od rozmiaru komunikatu.}
 \label{tabela_czas}
 \end{table}
@@ -58,35 +60,34 @@ Napisać program obliczający liczbę Pi do określonej precyzji (należy przete
 \begin{figure}[ht!]
     \centering
 	\begin{tikzpicture}
-		\begin{axis}[xlabel={Rozmiar komunikatu}, ylabel={Czas}, legend style={legend pos=outer north east}]
-		\addplot table [x=wielkosc, y=blokujacy, col sep=comma] {wyniki_czas.csv};
-		\addplot table [x=wielkosc, y=nieblokujacy, col sep=comma, ] {wyniki_czas.csv};
-		\addplot table [x=wielkosc, y=ping, col sep=comma, ] {wyniki_czas.csv};
-		\legend{$blokujący$,$nieblokujący$,$ping$}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Czas}, legend style={legend pos=outer north east}]
+		\addplot table [x=Wątki, y=Czas, col sep=comma] {wyniki.csv};
 		\end{axis}
 	\end{tikzpicture}
     \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
     \label{wykres_czas}
 \end{figure}
 
-\begin{table}[t]
-\centering
-\csvautotabular{wyniki_przepustowosc.csv}
-\caption{Czas w zależności od rozmiaru komunikatu.}
-\label{tabela_przepustowosc}
-\end{table}
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Przyspieszenie}, legend style={legend pos=outer north east}]
+		\addplot table [x=Wątki, y=Przyspieszenie, col sep=comma] {wyniki.csv};
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
+    \label{wykres_czas}
+\end{figure}
 
 \begin{figure}[ht!]
     \centering
 	\begin{tikzpicture}
-		\begin{axis}[xlabel={Rozmiar komunikatu}, ylabel={Przepustowość}, legend style={legend pos=outer north east}]
-		\addplot table [x=wielkosc, y=blokujacy, col sep=comma] {wyniki_przepustowosc.csv};
-		\addplot table [x=wielkosc, y=nieblokujacy, col sep=comma, ] {wyniki_przepustowosc.csv};
-		\legend{$blokujacy$,$nieblokujacy$}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Wydajność}, legend style={legend pos=outer north east}]
+		\addplot table [x=Wątki, y=Wydajność, col sep=comma] {wyniki.csv};
 		\end{axis}
 	\end{tikzpicture}
     \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
-    \label{wykres_przepustowosc}
+    \label{wykres_czas}
 \end{figure}
 
 \end{document}
