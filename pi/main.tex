@@ -1,0 +1,109 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{csvsimple}
+\usepackage{pgfplots}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+
+\lstset{
+    language=c,
+    basicstyle=\footnotesize,
+    numberstyle=\footnotesize,
+    numbers=left,
+    frame=single,
+    commentstyle=\color{mygreen},
+    tabsize=1,
+    title=\lstname,
+    escapeinside={\%*}{*)},
+    breaklines=true,
+    breakatwhitespace=true,
+    framextopmargin=2pt,
+    framexbottommargin=2pt,
+    inputencoding=utf8,
+    extendedchars=true,
+    literate={ł}{{\/l}}1 {ń}{{\'n}}1,
+}
+\title{Program typu ping-pong}
+\author{Rafał Selewońko}
+\begin{document}
+\maketitle
+ 
+% pierwsza sekcja
+\section{Zadanie}\label{sec:zadanie}
+Aplikacja MPI składa się z dwóch procesów: P0 oraz P1. Obydwa procesy 
+wymieniają się komunikatami stosując wzorzec wymiany jak w grze w ping-ponga. P0 wysyła 
+komunikat do P1 następnie P1 odsyła komunikat do P0. Ta sekwencja wymiany jest powtarzana 
+odpowiednią (bardzo dużą) liczbę iteracji, tak aby program wykonywał się przez kilka sekund. Czas 
+pracy programu jest obliczany przy pomocy funkcji MPI\_Walltime. Dzieląc ten czas przez liczbę 
+iteracji pomnożoną przez dwa (ponieważ komunikat podróżuje w obie strony) otrzymujemy czas 
+transmisji komunikatu w jedną stronę. Program powinien wykonywać szereg takich pomiarów dla 
+rosnącej długości komunikatów, tak abyś mógł w stanie sporządzić wykres 
+czas komunikatu=f(długość). Z kolei dzieląc długość komunikatu przez czas jego transmisji otrzymujemy przepustowość w bajtach/s 
+dla danej długości komunikatu. Należy sporządzić również wykres przepustowość=f(długość). 
+Program powinien implementować test ping-pong w dwóch wersjach: przy pomocy blokujących 
+operacji MPI\_Send/MPI\_Recv oraz przy pomocy nieblokujących MPI\_Isend/MPI\_Recv wraz z 
+MPI\_Wait. Wykonaj pomiar na klastrze i sporządź raport z wykonania zadania zawierający wydruk 
+programu + obydwa wykresy. Porównaj otrzymane wyniki z wynikiem polecenia ping oraz z 
+parametrami sieci Gigabit Ethernet. Porównaj wynik na czas transmisji komunikatu z modelem 
+przedstawionym na wykładzie. Czy przy pomocy MPI możliwe jest osiągnięcie maksymalnej 
+teoretycznej przepustowości sieci? Jeżeli nie to wymień przyczyny, które Twoim zdaniem to 
+uniemożliwiają.
+ 
+\pagebreak
+\section{Rozwiązanie}\label{sec:kod}
+
+\lstinputlisting{main.c}
+
+\section{Wyniki badań}
+
+\begin{table}[t]
+\centering
+\csvautotabular{wyniki_czas.csv}
+\caption{Czas w zależności od rozmiaru komunikatu.}
+\label{tabela_czas}
+\end{table}
+
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Rozmiar komunikatu}, ylabel={Czas}, legend style={legend pos=outer north east}]
+		\addplot table [x=wielkosc, y=blokujacy, col sep=comma] {wyniki_czas.csv};
+		\addplot table [x=wielkosc, y=nieblokujacy, col sep=comma, ] {wyniki_czas.csv};
+		\addplot table [x=wielkosc, y=ping, col sep=comma, ] {wyniki_czas.csv};
+		\legend{$blokujący$,$nieblokujący$,$ping$}
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
+    \label{wykres_czas}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\csvautotabular{wyniki_przepustowosc.csv}
+\caption{Czas w zależności od rozmiaru komunikatu.}
+\label{tabela_przepustowosc}
+\end{table}
+
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Rozmiar komunikatu}, ylabel={Przepustowość}, legend style={legend pos=outer north east}]
+		\addplot table [x=wielkosc, y=blokujacy, col sep=comma] {wyniki_przepustowosc.csv};
+		\addplot table [x=wielkosc, y=nieblokujacy, col sep=comma, ] {wyniki_przepustowosc.csv};
+		\legend{$blokujacy$,$nieblokujacy$}
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
+    \label{wykres_przepustowosc}
+\end{figure}
+
+\end{document}
