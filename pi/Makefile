@@ -25,5 +25,4 @@ main.dvi: main.tex $(IMGS)
 	convert $< $@
 
 clean:
-	rm -rf $(RESULT) *.o *.dvi *.ps *.pdf *.eps
-
+	rm -rf $(RESULT) *.o *.dvi *.ps *.pdf *.eps *.aux 
