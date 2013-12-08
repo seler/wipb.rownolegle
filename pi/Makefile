@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-fopenmp
+CFLAGS=-fopenmp -lm
 LINT=cppcheck --enable=all $<;
 IMGS:=$(patsubst %.png,%.eps,$(wildcard *.png))
 RESULT=pi
@@ -7,7 +7,7 @@ RESULT=pi
 all: $(RESULT) $(RESULT).pdf
 
 $(RESULT): main.o
-	$(CC) $(LFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $^ -o $@
 
 %.o: %.c
 	$(LINT) $(CC) $(CFLAGS) -c $< -o $@
