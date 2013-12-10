@@ -11,8 +11,6 @@ int main(int argc, char *argv[]) {
 	double pi;
 	pi = get_pi(atoi(argv[1]), atoi(argv[2]) * 1000000.);
 
-	//fprintf(stdout, "%s\n", "3.141592653589793238462643383279502884197169399375");
-	//fprintf(stdout, "%1.48f\n", pi);
 	return 0;
 }
 
@@ -21,8 +19,6 @@ double get_pi(int num_threads, int k_max){
 	double sum[num_threads];
 	int i;
 	int nthreads;
-
-	pi = 0.;
 
 	omp_set_num_threads(num_threads);
 

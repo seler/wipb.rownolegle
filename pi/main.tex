@@ -32,7 +32,7 @@
     extendedchars=true,
     literate={ł}{{\/l}}1 {ń}{{\'n}}1,
 }
-\title{Program typu ping-pong}
+\title{Obliczanie wartości $\pi$ z wykorzystaniem wzoru Leibniza}
 \author{Rafał Selewońko}
 \begin{document}
 \maketitle
@@ -44,18 +44,22 @@ Napisać program obliczający liczbę Pi do określonej precyzji (należy przete
 \pagebreak
 \section{Rozwiązanie}\label{sec:kod}
 
+\lstinputlisting[label=pi]{pi.c}
+\pagebreak
 \lstinputlisting{main.c}
 
-\section{Wyniki badań}
+\lstinputlisting{test.sh}
 
-Czas wykonania implementacji jednowątkowej wyniósł 5,554 sekundy.
+\section{Wyniki badań}
 
 \begin{table}[t]
 \centering
 \csvautotabular{wyniki.csv}
-\caption{Czas w zależności od rozmiaru komunikatu.}
-\label{tabela_czas}
+\caption{Wyniki testu.}
+\label{tabela}
 \end{table}
+
+Czas wykonania implementacji jednowątkowej (plik pi.c) wyniósł 5,554 sekundy. Implementacja wielowątkowa (plik main.c) uruchomiona z jednym wątkiem wykonuje się 1.13 razy dłużej niż wersja wielowątkowa. Dla liczby wątków większej niż jeden widać bardzo duże przyspieszenie. Testy były wykonywane na maszynie 4 rdzeniowej z hyperthreadingiem dlatego przyspieszenie rośnie do 8 wątków a dla większej ilości utrzymuje się na podobnym poziomie. W tabeli przedstawiono czas wykonania implementacji wielowątkowej dla ilości wątków od 1 do 32.
 
 \begin{figure}[ht!]
     \centering
@@ -64,7 +68,7 @@ Czas wykonania implementacji jednowątkowej wyniósł 5,554 sekundy.
 		\addplot table [x=Wątki, y=Czas, col sep=comma] {wyniki.csv};
 		\end{axis}
 	\end{tikzpicture}
-    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
+    \caption{Wykres czasu w zależności od liczby wątków.}
     \label{wykres_czas}
 \end{figure}
 
@@ -75,8 +79,8 @@ Czas wykonania implementacji jednowątkowej wyniósł 5,554 sekundy.
 		\addplot table [x=Wątki, y=Przyspieszenie, col sep=comma] {wyniki.csv};
 		\end{axis}
 	\end{tikzpicture}
-    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
-    \label{wykres_czas}
+    \caption{Wykres przyspieszenia w zależności od liczby wątków.}
+    \label{wykres_przyspieszenie}
 \end{figure}
 
 \begin{figure}[ht!]
@@ -86,8 +90,8 @@ Czas wykonania implementacji jednowątkowej wyniósł 5,554 sekundy.
 		\addplot table [x=Wątki, y=Wydajność, col sep=comma] {wyniki.csv};
 		\end{axis}
 	\end{tikzpicture}
-    \caption{Wykres czasu w zależności od rozmiaru komunikatu.}
-    \label{wykres_czas}
+    \caption{Wykres wydajności w zależności od liczby wątków.}
+    \label{wykres_wydajnosc}
 \end{figure}
 
 \end{document}
