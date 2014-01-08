@@ -1,5 +1,5 @@
 SOURCES=main.tex
-RESULT=rafal_selewonko_praca_dyplomowa
+RESULT=rafal_selewonko.pdf
 IMGS:=$(patsubst %.png,%.eps,$(wildcard *.png))
 DIR=build
 

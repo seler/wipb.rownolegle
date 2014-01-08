@@ -1,0 +1,86 @@
+\input{config}
+
+\def\titlelinea{Wydział Informatyki}
+\def\titlelineb{Katedra Oprogramowania}
+\def\titlelinec{Obliczenia równoległe}
+\def\titlelined{Temat: Obliczanie wartości $\pi$ z wykorzystaniem wzoru Leibniza}
+\def\wykonawca{inż. Rafał Selewońko}
+\def\promotor{mgr inż. Paweł Zabielski}
+\def\promotorstring{Prowadzący: } 
+\def\data{13 grudnia 2013}
+
+\begin{document}
+
+\input{title}
+%\tableofcontents
+
+\chapter{Zadanie}
+
+Napisać program obliczający liczbę Pi do określonej precyzji (należy przetestować na komputerach jaka będzie rozsądna wartość - tak aby program wykonywał się kilka sekund). Następnie należy zrównoleglić go przy pomocy OpenMP (dla różnej liczby wątków). Dodatkowo należy policzyć i sporządzić wykresy przyśpieszenia i wydajności. Do oceny należy przedstawić raport z wykonania zadania zawierający wydruk programu + wykresy.
+
+\chapter{Rozwiązanie}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=jednowatek, caption=Jednowątkowa wersja programu]{../pi.c}
+\end{minipage}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=wielowatek, caption=Wielowątkowa wersja prorgamu]{../main.c}
+\end{minipage}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=test, caption=Skrypt do testowania czasu wkonania programu]{../test.sh}
+\end{minipage}
+
+\chapter{Wyniki badań}
+
+\begin{table}[t]
+\centering
+\csvautotabular{../wyniki.csv}
+\caption{Wyniki testu.}
+\label{tabela}
+\end{table}
+
+Czas wykonania implementacji jednowątkowej (listing \ref{jednowatek}) wyniósł 5,554 sekundy. Implementacja wielowątkowa (listing \ref{wielowatek}) uruchomiona z jednym wątkiem wykonuje się 1.13 razy dłużej niż wersja wielowątkowa. Dla liczby wątków większej niż jeden widać bardzo duże przyspieszenie. Użyto skryptu widocznego na listingu \ref{test} do zliczenia czasu wykonania programu. Testy były wykonywane na maszynie 4 rdzeniowej z hyperthreadingiem dlatego przyspieszenie rośnie do 8 wątków a dla większej ilości utrzymuje się na podobnym poziomie. W tabeli przedstawiono czas wykonania implementacji wielowątkowej dla ilości wątków od 1 do 32.
+
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Czas}, legend style={legend pos=outer north east}]
+		\addplot table [x=Wątki, y=Czas, col sep=comma] {../wyniki.csv};
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres czasu w zależności od liczby wątków.}
+    \label{wykres_czas}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Przyspieszenie}, legend style={legend pos=outer north east}]
+		\addplot table [x=Wątki, y=Przyspieszenie, col sep=comma] {../wyniki.csv};
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres przyspieszenia w zależności od liczby wątków.}
+    \label{wykres_przyspieszenie}
+\end{figure}
+
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Wydajność}, legend style={legend pos=outer north east}]
+		\addplot table [x=Wątki, y=Wydajność, col sep=comma] {../wyniki.csv};
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres wydajności w zależności od liczby wątków.}
+    \label{wykres_wydajnosc}
+\end{figure}
+
+
+%\listoffigures
+
+%\bibliography{references}
+%\nocite{*}
+%\bibliographystyle{unsrt}
+
+\end{document}
