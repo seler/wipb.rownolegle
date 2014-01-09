@@ -6,14 +6,6 @@
 #define CONST_SEED 1234
 // ilosc osobnikow w populacji
 #define CONST_N 1234
-/*
-Zaimplementować szeregową i przynajmniej jedną równoległą wersję algorytmu.  Sporządzić wykresy 
-przyspieszenia (speedup) i wydajności (efficiency) zmieniając liczbę procesów od 1 do 10, dla:
-S = 4, 16, 64, 256, 512, 1024, oraz 
-N = (1024*1024)/S - S + 10. 
-Dla każdej wartości S należy przeprowadzić 10 tur obliczeń, przy czym tura wersji szeregowej 
-powinna trwać ok. minuty.
-*/
 
 
 double horner(double coefficients[], int deg, int x);
@@ -39,6 +31,17 @@ double* new_specimen(int s){
 	return specimen;
 }
 
+double* cross_specimens(double *s1, double *s2, int s){
+	int i;
+	double *specimen;
+	specimen = (double*) malloc(s * sizeof *specimen);
+
+	for(i = 0; i < s; i++){
+		specimen[i] = rand_float(-1, 1);
+	}
+	return specimen;
+}
+
 void print_specimen(double* specimen, int s){
 	int i;
 	for(i = 0; i < s; i++){
@@ -54,7 +57,7 @@ void print_population(double** population, int s, int n){
 	}
 }
 
-double** new_population(int s, int n){
+double** create_population(int s, int n){
 	int i;
 	// wskaznik na populacje
 	double **population;
@@ -69,33 +72,95 @@ double** new_population(int s, int n){
 	return population;
 }
 
+double** mutate_population(double **old_population, int s, int n){
+	int i;
+	// wskaznik na populacje
+	double **population;
+	// wskaznik na osobnika
+	double *specimen;
+	double *s1;
+	double *s2;
+	population = (double**) malloc(n * sizeof **population);
+
+	for(i = 0; i < n; i++){
+        s1 = old_population[rand_int(0, s)];
+        s2 = old_population[rand_int(0, s)];
+		specimen = cross_specimens(s1, s2, s);
+		population[i] = specimen;
+	}
+	return population;
+}
+
 double specimen_fitness(double* specimen, int s, int x){
 	return horner(specimen, s - 1, x);
+}
+
+double *population_fitness(double **population, int s, int n, int x){
+    int i;
+	double *fitness;
+
+	fitness = (double*) malloc(n * sizeof *fitness);
+
+	for(i = 0; i < n; i++){
+		fitness[i] = specimen_fitness(population[i], s, x);
+	}
+    return fitness;
+}
+
+void do_the_job(int s, int n, int x, int k){
+	int i;
+	double **population;
+	double **tmp_population;
+	double **new_population;
+	double *fitness;
+	double *tmp_fitness;
+
+	new_population = (double**) malloc(n * sizeof **new_population);
+
+	population = create_population(s, n);
+    fitness = population_fitness(population, s, n, x);
+
+	//print_population(population, s, n);
+    // printf("fitness: %f\n", fitness[i]);
+	for(i = 0; i < k; i++){
+        // 1. zmutowana populacja na podstawie poprzedniej
+	    tmp_population = mutate_population(population, s, n);
+        // 2. oblicz fitness
+        tmp_fitness = population_fitness(tmp_population, s, n, x);
+        // 3. umieść w nowej populacji najlepsze osobniki z starej i zmutowanej populacji
+	}
+	// printf("fitness: %f\n", specimen_fitness(population[i], s, x));
 }
 
 
 int main(int argc, char const *argv[]){
     srand(CONST_SEED);
+
 	// dlugosc osobnika
 	int s;
 	// wielkosc populacji
 	int n;
 	// wartosc dla ktorej obliczamy fitness
 	int x;
+	// ilosc generacji
+	int k;
 	// licznik do petli
 	int i;
 	// wskaznik na populacje
 	double **population;
 
-	//S = 4, 16, 64, 256, 512, 1024
-	s = 4;
-	n = ((1024 * 1024) / s) - s + 10;
-	x = 2;
-	population = new_population(s, n);
-	//print_population(population, s, n);
-	for(i = 0; i < n; i++){
-		//printf("fitness: %f\n", specimen_fitness(population[i], s, x));
+    // for s in 4 16 64 256 512 1024
+	s = atoi(argv[1]);
+	//n = ((1024 * 1024) / s) - s + 10;
+	n = atoi(argv[2]);
+	//x = 2;
+	x = atoi(argv[3]);
+	k = atoi(argv[4]);
+
+	for(i = 10; i > 0; i--){
+        do_the_job(s, n, x, k);
 	}
+
     return 0;
 }
 
