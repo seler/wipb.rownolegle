@@ -1,10 +1,13 @@
-szeregowy: szeregowy.c build
-	gcc szeregowy.c -o build/szeregowy
+SOURCES=szeregowy.c functions.c tests.c
+OBJECTS=$(SOURCES:.c=.o)
 
-build: 
-	mkdir build
+all: szeregowy tests
 
-.PHONY: clean
+szeregowy: szeregowy.o functions.o
+	gcc $^ -o $@
 
-clean:
-	rm -rf build
+tests: tests.o functions.o
+	gcc $^ -o $@
+
+.c.o:
+	gcc -c $^ -o $@
