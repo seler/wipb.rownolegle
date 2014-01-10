@@ -8,6 +8,14 @@
 #define CONST_N 1234
 
 
+void feel_free(double **p, int n){
+	int i;
+	for(i = 0; i < n; i++){
+		free(p[i]);
+	}
+	free(p);
+}
+
 double horner(double coefficients[], int deg, int x){
     int c;
     double result;
@@ -66,81 +74,73 @@ void print_specimen(double* specimen, int s){
 	}
 }
 
-void print_population(double** population, int s, int n){
+void print_population(double* population, int s, int n){
 	int i;
 	for(i = 0; i < n; i++){
 		printf("osobnik %d:\n", i + 1);
-		print_specimen(population[i], s);
+		print_specimen(&population[i], s);
 	}
 }
 
-double *new_specimen(int s){
-	double *specimen;
+void new_specimen(double *specimen, int s){
 	int i;
-
-	specimen = (double*) calloc(s, sizeof *specimen);
 
 	for(i = 0; i < s; i++){
 		specimen[i] = rand_float(-1, 1);
 	}
-	return specimen;
 }
 
 int new_specimen_test(){
 	int i;
-	double *specimen;
+	double specimen[10];
 
-	specimen = new_specimen(10);
+	new_specimen(specimen, 10);
 	print_specimen(specimen, 10);
 	return 1;
 }
 
 
-double **create_population(int s, int n){
+void create_population(double* population, int s, int n){
 	int i;
-	double **population;
-
-	population = (double**) calloc(n, sizeof **population);
 
 	for(i = 0; i < n; i++){
-		population[i] = new_specimen(s);
+		new_specimen(&population[i], s);
 	}
-	return population;
 }
 
 int create_population_test(){
-	double **population;
-	population = create_population(10, 10);
-	print_population(population, 10, 10);
+	double population[10][10];
+	create_population(&population[0][0], 10, 10);
+	print_population(&population[0][0], 10, 10);
+    return 1;
 }
 
-double specimen_fitness(double* specimen, int s, int x){
+double specimen_fitness(double *specimen, int s, int x){
 	return horner(specimen, s, x);
 }
 
 int specimen_fitness_test(){
-	printf("fitness: %f\n", specimen_fitness(new_specimen(10), 10, 10));
+	double specimen[10];
+	new_specimen(specimen, 10);
+	printf("fitness: %f\n", specimen_fitness(specimen, 10, 2));
 	return 1;
 }
 
-double *population_fitness(double **population, int s, int n, int x){
+void population_fitness(double *fitness, double *population, int s, int n, int x){
     int i;
-	double *fitness;
-
-	fitness = (double*) malloc(n * sizeof *fitness);
 
 	for(i = 0; i < n; i++){
-		fitness[i] = specimen_fitness(population[i], s, x);
+		fitness[i] = specimen_fitness(&population[i], s, x);
 	}
-    return fitness;
 }
 
 int population_fitness_test(){
-	double **population;
-	double *fitness;
+	double population[10][10];
+    double fitness[10];
 	int i;
-	population = create_population(10, 10);
-	fitness = population_fitness(population, 10, 10, 10);
+
+	create_population(&population[0][0], 10, 10);
+	population_fitness(fitness, &population[0][0], 10, 10, 2);
 
 	for(i = 0; i < 10; i++){
 		printf("population fitness: %f\n", fitness[i]);
@@ -149,7 +149,7 @@ int population_fitness_test(){
 	return 1;
 }
 
-int partition(double **populacja, double *klucz, int s, int p, int r) // dzielimy tablice na dwie czesci, w pierwszej wszystkie liczby sa mniejsze badz rowne x, w drugiej wieksze lub rowne od x
+int partition(double *populacja, double *klucz, int s, int p, int r) // dzielimy tablice na dwie czesci, w pierwszej wszystkie liczby sa mniejsze badz rowne x, w drugiej wieksze lub rowne od x
 {
 	int i, j;
 	double k, w;
@@ -171,18 +171,19 @@ int partition(double **populacja, double *klucz, int s, int p, int r) // dzielim
 			w = klucz[i];
 			klucz[i] = klucz[j];
 			klucz[j] = w;
-			sp = populacja[i];
+			*sp = populacja[i];
 			populacja[i] = populacja[j];
-			populacja[j] = sp;
+			populacja[j] = *sp;
 			i++;
 			j--;
 		}
 		else // gdy i >= j zwracamy j jako punkt podzialu tablicy
 			return j;
 	}
+    free(sp);
 }
 
-void quicksort(double **population, double *fitness, int s, int p, int r) // sortowanie szybkie, r ma byc ilosc liczb - 1
+void quicksort(double *population, double *fitness, int s, int p, int r) // sortowanie szybkie, r ma byc ilosc liczb - 1
 {
 	int q;
 	if (p < r) 
@@ -194,14 +195,15 @@ void quicksort(double **population, double *fitness, int s, int p, int r) // sor
 }
 
 int quicksort_test(){
-	double **population;
-	double *fitness;
-	int i, f;
+	double f;
+	double population[10][10];
+    double fitness[10];
+	int i;
 
-	population = create_population(10, 10);
-	fitness = population_fitness(population, 10, 10, 10);
+	create_population(&population[0][0], 10, 10);
+	population_fitness(fitness, &population[0][0], 10, 10, 2);
 
-	quicksort(population, fitness, 10, 0, 10 - 1);
+	quicksort(&population[0][0], fitness, 10, 0, 10 - 1);
 
 	f = fitness[0];
 	printf("quicksort population fitness: %f\n", fitness[0]);
@@ -216,21 +218,28 @@ int quicksort_test(){
 }
 
 
-double **select_new_breed(double **p1, double *f1, double **p2, double *f2, int s, int n){
-	double **population;
-	double **tmp_population;
-	double *specimen;
-	double *tmp_fitness;
+void select_new_breed(double *p1, double *f1, double *p2, double *f2, int s, int n){
+	double tmp_population[2 * n][s];
+	double tmp_fitness[2 * n];
 	int i, j, k;
-	tmp_population = (double**) calloc(2 * n, sizeof **population);
-	population = (double**) calloc(n, sizeof **population);
-	tmp_fitness = (double*) calloc(2 * n, sizeof *tmp_fitness);
 
-	specimen = (double*) calloc(s, sizeof *specimen);
+    print_population(p1, s, n);
 
+
+	for(i = 0; i < n; i++){
+		for(k = 0; k < s; k++){
+            //printf("%f", p1[i][k]);
+		    //tmp_population[i][k] = p1[i][k];
+		    //tmp_population[i + n][k] = p2[i][k];
+		}
+		tmp_fitness[i] = f1[i];
+		tmp_fitness[i + n] = f2[i];
+		j++;
+	}
+
+/*
 	j = 0;
 	for(i = 0; i < n; i++){
-		tmp_population[j] = (double*) malloc(s * sizeof *specimen);
 		for(k = 0; k < s; k++){
 		    tmp_population[j][k] = p1[i][k];
 		}
@@ -238,7 +247,6 @@ double **select_new_breed(double **p1, double *f1, double **p2, double *f2, int 
 		j++;
 	}
 	for(i = 0; i < n; i++){
-		tmp_population[j] = (double*) malloc(s * sizeof *specimen);
 		for(k = 0; k < s; k++){
 		    tmp_population[j][k] = p2[i][k];
 		}
@@ -246,58 +254,50 @@ double **select_new_breed(double **p1, double *f1, double **p2, double *f2, int 
 		j++;
 	}
 
-	quicksort(tmp_population, tmp_fitness, s, 0, n);
+	quicksort(&tmp_population[0][0], tmp_fitness, s, 0, n - 1);
 
 	j = 0;
 	for(i = 0; i < n; i++){
-		population[j] = (double*) malloc(s * sizeof *specimen);
 		for(k = 0; k < s; k++){
-		    population[j][k] = tmp_population[i][k];
+		    p1[j][k] = tmp_population[i][k];
 		}
 		j++;
 	}
-	for(i = 0; i < n; i++){
-		free(tmp_population[j]);
-		j++;
-	}
-	free(tmp_population);
-	free(tmp_fitness);
 
-	return population;
+*/
 }
+
+/*
 int select_new_breed_test(){
-	double **p1;
-	double **p2;
-	double **p3;
-	double *f1;
-	double *f2;
-	double *f3;
-	int i;
+	int i, s, n;
+    s = 10;
+    n = 10;
+	double p1[s][n];
+	double p2[s][n];
+    double f1[n];
+    double f2[n];
 
-	p1 = create_population(10, 10);
-	f1 = population_fitness(p1, 10, 10, 2);
-	p2 = create_population(10, 10);
-	f2 = population_fitness(p2, 10, 10, 2);
+	create_population(&p1[0][0], s, n);
+	population_fitness(f1, &p1[0][0], s, n, 2);
+	create_population(&p2[0][0], s, n);
+	population_fitness(f2, &p2[0][0], s, n, 2);
 
-	p3 = select_new_breed(p1, f1, p2, f2, 10, 10);
-	f3 = population_fitness(p3, 10, 10, 2);
+	//quicksort(&p1[0][0], f1, n, 0, n - 1);
+    
+	for(i = 0; i < 10; i++){
+		printf("population fitness: %f\n", f1[i]);
+	}
+
+	select_new_breed(&p1[0][0], f1, &p1[0][0], f1, s, n);
 
 	for(i = 0; i < 10; i++){
-		printf("population fitness: %f\n", f3[i]);
+		printf("population fitness: %f\n", f1[i]);
 	}
 
 	return 1;
 }
 
-void feel_free(double **p, int n){
-	int i;
-	for(i = 0; i < n; i++){
-		free(p[i]);
-	}
-	free(p);
-}
 
-/*
 
 double* cross_specimens(double *s1, double *s2, int s){
 	int i;

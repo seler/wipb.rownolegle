@@ -29,9 +29,9 @@ int main(int argc, char const *argv[]){
 
 	display("quicksort", quicksort_test());
 
-	display("select_new_breed", select_new_breed_test());
-
+	//display("select_new_breed", select_new_breed_test());
 	/*
+
 	display("cross_specimens", cross_specimens_test());
 
 	display("mutate_population",mutate_population_test());
