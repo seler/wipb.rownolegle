@@ -1,13 +1,10 @@
 SOURCES=szeregowy.c functions.c tests.c
 OBJECTS=$(SOURCES:.c=.o)
 
-all: szeregowy tests
+all: szeregowy
 
-szeregowy: szeregowy.o functions.o
-	gcc $^ -o $@
-
-tests: tests.o functions.o
-	gcc $^ -o $@
+szeregowy: szeregowy.o
+	gcc -O2 $^ -o $@
 
 .c.o:
-	gcc -c $^ -o $@
+	gcc -O2 -c $^ -o $@

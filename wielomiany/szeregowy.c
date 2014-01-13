@@ -2,31 +2,59 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "functions.h"
 
 // staly seed, zeby miec taki sam random dla roznych wersji algorytmu
 #define CONST_SEED 1234
 // ilosc osobnikow w populacji
-#define CONST_N 1234
 
 
+double horner(int coefficients[], int deg, double x){
+    int c;
+    double result;
+
+    result = 0;
+    for (c = 0; c < deg; c++){
+        result = result * x + (double)coefficients[c];
+    }
+    return result;
+}
+
+int rand_int(int min, int max){
+    return (rand() % (max + 1 - min)) + min;
+}
+
+double rand_float(double min, double max){
+    return (((float)rand() / (float)RAND_MAX) * (max - min)) + min;
+}
 
 
 void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
     double f;
-    double population[2 * n][s];
-    double fitness[2 * n];
     int i, j, m, p, o, k;
     double ftmp;
+
+
+    // ten sposob powoduje przepelnienie stosu dlatego robimy mallocami
+    //double population[2 * n][s];
+    //double fitness[2 * n];
+
+    // alokowanie pamieci
+    double **population = malloc(sizeof *population * n * 2);
+    for (i = 0; i < (n * 2); i++){
+        population[i] = malloc(sizeof *population[i] * s);
+    }
+    double *fitness = malloc(sizeof *fitness * n * 2);
 
 
     // generowanie nowej populacji
     for(i = 0; i < n; i++){
         for(j = 0; j < s; j++){
+            //printf("dupa n - %d s - %d\n", i, j);
             population[i][j] = rand_float(-1, 1);
         }
     }
 
+    // petla generacji
     for (k = 0; k < max_k; ++k){
         // krzyzowanie i mutacja
         for(m = 0; m < n; m++){
@@ -68,7 +96,7 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
         //for(i = 0; i < n; i++){
         //    printf("fitness %f:\n", fitness[i]);
         //}
-    
+
         // sortowanie babelkowe - wybranie najlepszych osobnikow
         double tmp_f;
         double tmp_p[s];
@@ -98,23 +126,22 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
     //  wyswietlanie najlepszego osobnika
     printf("najlepszy osobnik fitness %f\n", fitness[0]);
     //for(j = 0; j < s; j++){
-        //printf("%f\n", population[0][j]);
+    //printf("%f\n", population[0][j]);
     //}
+
+
+    // zwalnianie pamieci
+    for (i = 0; i < (n * 2); i++){
+        free(population[i]);
+    }
+    free(population);
+    free(fitness);
 }
 
 
 int main(int argc, char const *argv[]){
 
-    // dlugosc osobnika
-    int s;
-    // wielkosc populacji
-    int n;
-    // wartosc dla ktorej obliczamy fitness
-    int x;
-    // ilosc generacji
-    int k;
-    // licznik do petli
-    int i;
+    int s, n, t, k, i;
 
 
     if(argc != 5){
@@ -122,26 +149,23 @@ int main(int argc, char const *argv[]){
         return 1;
     }
 
-    // for s in 4 16 64 256 512 1024
     s = atoi(argv[1]);
-    //n = ((1024 * 1024) / s) - s + 10;
     n = atoi(argv[2]);
-    //x = 2;
-    x = atoi(argv[3]);
+    t = atoi(argv[3]);
     k = atoi(argv[4]);
 
     int coefficients[s];
 
     srand(CONST_SEED);
 
-    for(i = 0; i < n; i++){
+    for(i = 0; i < s; i++){
         coefficients[i] = rand_int(-100, 100);
     }
 
     srand(time(NULL) + rand());
 
-    for(i = 10; i > 0; i--){
-        do_the_job(s, n, x, k, coefficients);
+    for(i = 1; i > 0; i--){
+        do_the_job(s, n, t, k, coefficients);
     }
 
     return 0;
