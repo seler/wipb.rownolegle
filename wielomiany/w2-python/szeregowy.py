@@ -25,14 +25,8 @@ def horner(x, polynomial):
     return result
 
 
-wielomian = [1234, 873, -2, 8273, 123]
-
-
 def specimen_fitness(specimen, x):
-    result = 0
-    for i in specimen:
-        result += horner(i, wielomian)
-    return result
+    return horner(x, specimen)
 
 
 def population_fitness(population, x):

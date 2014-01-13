@@ -16,13 +16,13 @@ void feel_free(double **p, int n){
 	free(p);
 }
 
-double horner(int coefficients[], int deg, double x){
+double horner(double coefficients[], int deg, int x){
     int c;
     double result;
 
     result = 0;
     for (c = 0; c < deg; c++){
-        result = result * x + (double)coefficients[c];
+        result = result * x + coefficients[c];
     }
     return result;
 }
@@ -30,7 +30,7 @@ double horner(int coefficients[], int deg, double x){
 
 int horner_test(){
     // (6*5**5)+(5*5**4)+(4*5**3)+(3*5**2)+(2*5**1)+(1*5**0)
-    int coefficients[6] = {6, 5, 4, 3, 2, 1};
+    double coefficients[6] = {6, 5, 4, 3, 2, 1};
     return 22461 == horner(coefficients, 6, 5);
 }
 
@@ -116,13 +116,13 @@ int create_population_test(){
 }
 
 double specimen_fitness(double *specimen, int s, int x){
-	//return horner(specimen, s, x);
+	return horner(specimen, s, x);
 }
 
 int specimen_fitness_test(){
 	double specimen[10];
 	new_specimen(specimen, 10);
-	//printf("fitness: %f\n", specimen_fitness(specimen, 10, 2));
+	printf("fitness: %f\n", specimen_fitness(specimen, 10, 2));
 	return 1;
 }
 
@@ -135,7 +135,6 @@ void population_fitness(double *fitness, double *population, int s, int n, int x
 }
 
 int population_fitness_test(){
-    /*
 	double population[10][10];
     double fitness[10];
 	int i;
@@ -146,7 +145,6 @@ int population_fitness_test(){
 	for(i = 0; i < 10; i++){
 		printf("population fitness: %f\n", fitness[i]);
 	}
-    */
 
 	return 1;
 }

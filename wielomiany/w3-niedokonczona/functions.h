@@ -6,7 +6,7 @@
 
 void feel_free(double **p, int n);
 
-double horner(int coefficients[], int deg, double x);
+double horner(double coefficients[], int deg, int x);
 
 int horner_test();
 
