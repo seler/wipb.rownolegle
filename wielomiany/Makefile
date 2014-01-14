@@ -1,6 +1,3 @@
-SOURCES=szeregowy.c functions.c tests.c
-OBJECTS=$(SOURCES:.c=.o)
-
 all: szeregowy rownolegly
 
 szeregowy: szeregowy.o
@@ -11,6 +8,7 @@ rownolegly: rownolegly.o
 
 #.c.o:
 #	gcc -Wall -O2 -c $^ -o $@
+#
 szeregowy.o: szeregowy.c
 	gcc -O2 -c $^ -o $@
 

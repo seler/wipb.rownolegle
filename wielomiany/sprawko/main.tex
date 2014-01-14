@@ -1,0 +1,70 @@
+\input{config}
+
+\def\titlelinea{Wydział Informatyki}
+\def\titlelineb{Katedra Oprogramowania}
+\def\titlelinec{Obliczenia równoległe}
+\def\titlelined{Temat: Skalowalność algorytmów genetycznych}
+\def\wykonawca{inż. Rafał Selewońko}
+\def\promotor{mgr inż. Paweł Zabielski}
+\def\promotorstring{Prowadzący: } 
+\def\data{24 stycznia 2014}
+
+\begin{document}
+
+\input{title}
+%\tableofcontents
+
+\chapter{Zadanie}
+
+Napisać program wykorzystujący algorytm  genetyczny do szukania minimum sumy S wielomianów
+stopnia S­1, przy czym każdy z wielomianów ma różne, ale stałe współczynniki typu double.
+
+\chapter{Rozwiązanie}
+
+\lstinputlisting[label=zrodloszeregowa, caption=Szeregowa wersja programu]{../szeregowy.c}
+
+\lstinputlisting[label=zrodlorownolegla, caption=Równoległa wersja prorgamu]{../rownolegly.c}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=zrodlomakefile, caption=Makefile]{../Makefile}
+\end{minipage}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=zrodlorun, caption=Skrypt uruchamiający serię badań]{../run.sh}
+\end{minipage}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=zrodlorunszeregowy, caption=Skrypt uruchamiający serię badań wersji szeregowej]{../run-szeregowy.sh}
+\end{minipage}
+
+\noindent\begin{minipage}{\linewidth}
+\lstinputlisting[label=zrodlorunrownolegly, caption=Skrypt uruchamiający serię badań wersji równoległej]{../run-rownolegly.sh}
+\end{minipage}
+
+\chapter{Wyniki badań}
+
+\begin{table}[t]
+\centering
+\csvautotabular{../rownolegly-4-cores.txt}
+\caption{Wyniki testu.}
+\label{tabela}
+\end{table}
+
+\begin{figure}[ht!]
+    \centering
+	\begin{tikzpicture}
+		\begin{axis}[xlabel={Ilość wątków}, ylabel={Czas}, legend style={legend pos=outer north east}]
+		\addplot table [x=threads, y=t, col sep=comma] {../rownolegly-4-cores.txt};
+		\end{axis}
+	\end{tikzpicture}
+    \caption{Wykres czasu w zależności od liczby wątków.}
+    \label{wykres_czas}
+\end{figure}
+
+%\listoffigures
+
+%\bibliography{references}
+%\nocite{*}
+%\bibliographystyle{unsrt}
+
+\end{document}

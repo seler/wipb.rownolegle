@@ -1,0 +1,170 @@
+\def\thelstlisting{}  % potrzebne do hacka zmiany formatu numerowania listingów
+\documentclass[a4paper,12pt]{report}
+\usepackage{polski}
+\usepackage[polish]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{csvsimple}
+\usepackage{pgfplots}
+\usepackage{lipsum}
+\usepackage{titlesec, blindtext, color}
+\usepackage{url}
+\usepackage{indentfirst}
+\graphicspath{{images/}}
+
+% Polskie numerowanie:
+\makeatletter
+ \def\thechapter{\arabic{chapter}.}
+ \def\thesection{\thechapter\arabic{section}.}
+ %\def\thesection{\arabic{section}.}
+ \def\thesubsection{\thesection\arabic{subsection}.}
+ \def\thesubsubsection{\thesubsection\arabic{subsubsection}.}
+\makeatother
+\renewcommand{\thefigure}{\thechapter\arabic{figure}}
+\renewcommand{\thetable}{\thechapter\arabic{table}}
+% to jest hack, bo sie nie da zrobic normalnie :(
+%\renewcommand{\thelstlisting}{\thechapter\arabic{lstlisting}.}
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand \thelstlisting
+       {\ifnum \c@chapter>\z@ \thechapter\fi \@arabic\c@lstlisting}%
+\renewcommand{\lstlistingname}{Listing}
+\renewcommand{\tablename}{Tabela} 
+\renewcommand{\figurename}{Rysunek} 
+%\renewcommand{\lstlistlistingname}{} 
+%\renewcommand{\listfigurename}{}
+%\renewcommand{\listtablename}{}
+
+}
+\makeatother
+
+
+%\newcommand{\sectionbreak}{\newpage}
+%\let\stdsection\section
+%\renewcommand\section{\newpage\stdsection}
+
+\titleformat{\chapter}
+{\normalfont\huge\bfseries}{\thechapter}{20pt}{\Huge}
+\titleformat{\section}
+{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}
+{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+\titleformat{\paragraph}[runin]
+{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+\titleformat{\subparagraph}[runin]
+{\normalfont\normalsize\bfseries}{\thesubparagraph}{1em}{}
+\titlespacing*{\chapter} {0pt}{24pt}{24pt}
+\titlespacing*{\section} {0pt}{12pt}{12pt}
+\titlespacing*{\subsection} {0pt}{12pt}{12pt}
+\titlespacing*{\subsubsection}{0pt}{12pt}{12pt}
+\titlespacing*{\paragraph} {0pt}{3.25ex plus 1ex minus .2ex}{1em}
+\titlespacing*{\subparagraph} {\parindent}{3.25ex plus 1ex minus .2ex}{1em}
+
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  backgroundcolor=\color{white},   % choose the background color
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=t,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  frame=tb,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code
+  keywordstyle=\color{blue},       % keyword style
+  language=c,                 % the language of the code
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\footnotesize\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  caption=\lstname,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+    inputencoding=utf8x, 
+    extendedchars=\true,
+    lineskip=1pt,
+    literate={ą}{{\k{a}}}1
+             {Ą}{{\k{A}}}1
+             {ę}{{\k{e}}}1
+             {Ę}{{\k{E}}}1
+             {ó}{{\'o}}1
+             {Ó}{{\'O}}1
+             {ś}{{\'s}}1
+             {Ś}{{\'S}}1
+             {ł}{{\l{}}}1
+             {Ł}{{\L{}}}1
+             {ż}{{\.z}}1
+             {Ż}{{\.Z}}1
+             {ź}{{\'z}}1
+             {Ź}{{\'Z}}1
+             {ć}{{\'c}}1
+             {Ć}{{\'C}}1
+             {ń}{{\'n}}1
+             {Ń}{{\'N}}1
+}
+
+
+
+\setlength{\paperheight}{297mm}
+\setlength{\paperwidth}{210mm} 
+
+\setlength{\hoffset}{0.00cm}
+\setlength{\voffset}{0.00cm}
+
+\setlength{\oddsidemargin}{1.00cm}
+\setlength{\topmargin}{1mm}
+\setlength{\textheight}{\paperheight}
+\textheight 23 cm	%26
+\voffset -1.5 cm		%-3
+\setlength{\textwidth}{16cm}  
+\hoffset -0.5 cm
+\setlength{\marginparsep}{1mm}  
+\setlength{\marginparwidth}{2cm}
+\setlength{\footskip}{2.36cm}   
+\setlength{\parindent}{10mm}
+
+\linespread{1.5}
+\setlength{\parindent}{10mm}
+
+\hyphenpenalty=2000			% nie dziel wyrazów zbyt często
+\clubpenalty=10000			% kara za sierotki
+\widowpenalty=10000			% nie pozostawiaj wdów
+\brokenpenalty=10000		% nie dziel wyrazów między stronami
+% zakomentowane bo psuje listingi
+%\exhyphenpenalty=999999		% nie dziel słów z myślnikiem 
+
+% Alter some LaTeX defaults for better treatment of figures:
+% See p.105 of "TeX Unbound" for suggested values.
+% See pp. 199-200 of Lamport's "LaTeX" book for details.
+%   General parameters, for ALL pages:
+\renewcommand{\topfraction}{0.9}	% max fraction of floats at top
+\renewcommand{\bottomfraction}{0.8}	% max fraction of floats at bottom
+%   Parameters for TEXT pages (not float pages):
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}     % 2 may work better
+\setcounter{dbltopnumber}{2}    % for 2-column pages
+\renewcommand{\dbltopfraction}{0.9}	% fit big float above 2-col. text
+\renewcommand{\textfraction}{0.07}	% allow minimal text w. figs
+%   Parameters for FLOAT pages (not text pages):
+\renewcommand{\floatpagefraction}{0.7}	% require fuller float pages
+% N.B.: floatpagefraction MUST be less than topfraction !!
+\renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+
+\title{Analiza i porównanie popularncych, otwartoźródłowych bibliotek (framework'ów) do tworzenia aplikacji internetowych na podstawie prostej aplikacji.}
+
+\author{Rafał Selewońko}
+\date{\today}
