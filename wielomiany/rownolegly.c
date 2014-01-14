@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include "omp.h"
 
 // staly seed, zeby miec taki sam random dla roznych wersji algorytmu
 #define CONST_SEED 1234
@@ -31,6 +32,7 @@ double rand_float(double min, double max){
 void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
     int i, j, m, p, o, k;
     double ftmp, ftmp1, ftmp2;
+    int num_threads;
 
 
     // ten sposob powoduje przepelnienie stosu dlatego robimy mallocami
@@ -44,11 +46,20 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
     }
     double *fitness = malloc(sizeof *fitness * n * 2);
 
-
     // generowanie nowej populacji
-    for(i = 0; i < n; i++){
-        for(j = 0; j < s; j++){
-            population[i][j] = rand_float(-1, 1);
+    #pragma omp parallel
+    {
+        int omp_thread_num, omp_num_threads, omp_i, omp_j;
+        omp_thread_num = omp_get_thread_num();
+        omp_num_threads = omp_get_num_threads();
+        if(omp_thread_num == 0){
+            num_threads = omp_num_threads;
+        }
+
+        for(omp_i = omp_thread_num; omp_i < n; omp_i += num_threads){
+            for(omp_j = 0; omp_j < s; omp_j++){
+                population[omp_i][omp_j] = rand_float(-1, 1);
+            }
         }
     }
 
@@ -64,28 +75,40 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
     for (k = 0; k < max_k; ++k){
         // krzyzowanie i mutacja
         // obliczanie fitness
-        for(m = 0; m < n; m++){
-            i = rand_int(0, n);
-            j = rand_int(0, n);
-            p = rand_int(0, s);
-            ftmp1 = 0;
-            ftmp2 = 0;
-            for(o = 0; o < s; o++){
-                if (rand_int(0, 1000) < t){
-                    ftmp = rand_float(-1, 1);
-                } else {
-                    ftmp = population[i][o];
-                }
-                if(o < p){
-                    population[n + m][o] = ftmp;
-                } else {
-                    population[n + m][o] = ftmp;
-                }
-                ftmp1 += horner(coefficients, s, population[m][o]);
-                ftmp2 += horner(coefficients, s, population[n + m][o]);
+        #pragma omp parallel
+        {
+            int omp_thread_num, omp_num_threads;
+            int omp_i, omp_j, omp_p, omp_o, omp_m;
+            double omp_ftmp1, omp_ftmp2, omp_ftmp;
+            omp_thread_num = omp_get_thread_num();
+            omp_num_threads = omp_get_num_threads();
+            if(omp_thread_num == 0){
+                num_threads = omp_num_threads;
             }
-            fitness[m] = ftmp1;
-            fitness[n + m] = ftmp1;
+
+            for(omp_m = omp_thread_num; omp_m < n; omp_m+=num_threads){
+                omp_i = rand_int(0, n);
+                omp_j = rand_int(0, n);
+                omp_p = rand_int(0, s);
+                omp_ftmp1 = 0;
+                omp_ftmp2 = 0;
+                for(omp_o = 0; omp_o < s; omp_o++){
+                    if (rand_int(0, 1000) < t){
+                        omp_ftmp = rand_float(-1, 1);
+                    } else {
+                        omp_ftmp = population[omp_i][omp_o];
+                    }
+                    if(omp_o < omp_p){
+                        population[n + omp_m][omp_o] = omp_ftmp;
+                    } else {
+                        population[n + omp_m][omp_o] = omp_ftmp;
+                    }
+                    omp_ftmp1 += horner(coefficients, s, population[omp_m][omp_o]);
+                    omp_ftmp2 += horner(coefficients, s, population[n + omp_m][omp_o]);
+                }
+                fitness[omp_m] = omp_ftmp1;
+                fitness[n + omp_m] = omp_ftmp1;
+            }
         }
 
         //  wyswietlanie populacji
@@ -104,25 +127,30 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
 
         // sortowanie babelkowe - wybranie najlepszych osobnikow
         //printf("sortowanie\n");
-        double tmp_f;
-        double tmp_p[s];
         for (i = 0; i<(n*2); i++)
         {
-            for (j=0; j<(n*2)-1-i; j++)
+            int first = i % 2;
+
+            #pragma omp parallel default(none),shared(population,fitness,first,s,n,i)
             {
-                if (fitness[j] > fitness[j+1])
-                {
-                    tmp_f = fitness[j+1];
-                    for(m = 0; m < s; m++){
-                        tmp_p[m] = population[j+1][m];
-                    }
-                    fitness[j+1] = fitness[j];
-                    for(m = 0; m < s; m++){
-                        population[j+1][m] = population[j][m];
-                    }
-                    fitness[j] = tmp_f;
-                    for(m = 0; m < s; m++){
-                        population[j][m] = tmp_p[m];
+                int omp_j, omp_m;
+                double tmp_f;
+                double tmp_p[s];
+                #pragma omp for
+                for (omp_j=first; omp_j<(n*2)-1-i; omp_j++){
+                    if (fitness[omp_j] > fitness[omp_j+1]){
+                        tmp_f = fitness[omp_j+1];
+                        for(omp_m = 0; omp_m < s; omp_m++){
+                            tmp_p[omp_m] = population[omp_j+1][omp_m];
+                        }
+                        fitness[omp_j+1] = fitness[omp_j];
+                        for(omp_m = 0; omp_m < s; omp_m++){
+                            population[omp_j+1][omp_m] = population[omp_j][omp_m];
+                        }
+                        fitness[omp_j] = tmp_f;
+                        for(omp_m = 0; omp_m < s; omp_m++){
+                            population[omp_j][omp_m] = tmp_p[omp_m];
+                        }
                     }
                 }
             }
