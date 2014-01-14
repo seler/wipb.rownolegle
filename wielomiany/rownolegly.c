@@ -49,14 +49,9 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
     // generowanie nowej populacji
     #pragma omp parallel
     {
-        int omp_thread_num, omp_num_threads, omp_i, omp_j;
-        omp_thread_num = omp_get_thread_num();
-        omp_num_threads = omp_get_num_threads();
-        if(omp_thread_num == 0){
-            num_threads = omp_num_threads;
-        }
-
-        for(omp_i = omp_thread_num; omp_i < n; omp_i += num_threads){
+        int omp_i, omp_j;
+        #pragma omp for
+        for(omp_i = 0; omp_i < n; omp_i++){
             for(omp_j = 0; omp_j < s; omp_j++){
                 population[omp_i][omp_j] = rand_float(-1, 1);
             }
@@ -77,16 +72,10 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
         // obliczanie fitness
         #pragma omp parallel
         {
-            int omp_thread_num, omp_num_threads;
             int omp_i, omp_j, omp_p, omp_o, omp_m;
             double omp_ftmp1, omp_ftmp2, omp_ftmp;
-            omp_thread_num = omp_get_thread_num();
-            omp_num_threads = omp_get_num_threads();
-            if(omp_thread_num == 0){
-                num_threads = omp_num_threads;
-            }
-
-            for(omp_m = omp_thread_num; omp_m < n; omp_m+=num_threads){
+            #pragma omp for 
+            for(omp_m = 0; omp_m < n; omp_m++){
                 omp_i = rand_int(0, n);
                 omp_j = rand_int(0, n);
                 omp_p = rand_int(0, s);
@@ -129,16 +118,18 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
         //printf("sortowanie\n");
         for (i = 0; i<(n*2); i++)
         {
+            int stop = 0;
             int first = i % 2;
 
-            #pragma omp parallel default(none),shared(population,fitness,first,s,n,i)
+            #pragma omp parallel 
             {
                 int omp_j, omp_m;
                 double tmp_f;
                 double tmp_p[s];
-                #pragma omp for
-                for (omp_j=first; omp_j<(n*2)-1-i; omp_j++){
+                #pragma omp for reduction(+:stop)
+                for (omp_j=first; omp_j<(n*2)-1-i; omp_j+=2){
                     if (fitness[omp_j] > fitness[omp_j+1]){
+                        stop += 1;
                         tmp_f = fitness[omp_j+1];
                         for(omp_m = 0; omp_m < s; omp_m++){
                             tmp_p[omp_m] = population[omp_j+1][omp_m];
@@ -153,6 +144,9 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
                         }
                     }
                 }
+            }
+            if(!stop){
+                break;
             }
         }
     }
@@ -183,11 +177,11 @@ void do_the_job(int s, int n, int t, int max_k, int coefficients[]){
 
 int main(int argc, char const *argv[]){
 
-    int s, n, t, k, i;
+    int s, n, t, k, i, o;
 
 
-    if(argc != 5){
-        fprintf(stderr, "Usage: %s s n t k\n\ns - stopien wielomianu\nn - wielkosc populacji\nt - liczba T w przedziale 0 - 1000\nk - ilosc generacji\n\n", argv[0]);
+    if(argc != 6){
+        fprintf(stderr, "Usage: %s s n t k o\n\ns - stopien wielomianu\nn - wielkosc populacji\nt - liczba T w przedziale 0 - 1000\nk - ilosc generacji\no - ilosc watkow\n\n", argv[0]);
         return 1;
     }
 
@@ -195,8 +189,10 @@ int main(int argc, char const *argv[]){
     n = atoi(argv[2]);
     t = atoi(argv[3]);
     k = atoi(argv[4]);
+    o = atoi(argv[5]);
 
     int coefficients[s];
+
 
     srand(CONST_SEED);
 
@@ -206,9 +202,9 @@ int main(int argc, char const *argv[]){
 
     srand(time(NULL) + rand());
 
-    for(i = 1; i > 0; i--){
-        do_the_job(s, n, t, k, coefficients);
-    }
+    omp_set_num_threads(o);
+
+    do_the_job(s, n, t, k, coefficients);
 
     return 0;
 }
